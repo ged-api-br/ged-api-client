@@ -12,7 +12,7 @@ composer require ged/api-client
 
 ---
 
-## ⚙️ Exemplo de uso (Certificado A1)
+## ⚙️ Exemplo de uso (Certificado A1) – fluxo legado
 
 ```php
 use Ged\ApiClient\GedApiClient;
@@ -103,3 +103,42 @@ Verifica validade de PDF assinado
 ## 📄 Licença
 
 MIT
+
+---
+
+## ✒️ PAdES (novo fluxo recomendado)
+
+Autenticação: `Authorization: Bearer <API_KEY>` (compat `X-API-KEY` mantida).
+
+### Exemplo rápido
+
+```php
+use Ged\ApiClient\GedApiClient;
+
+$client = new GedApiClient('https://ged.api.br/api/', 'seu_token_aqui');
+
+// 1) Prepare
+$prepare = $client->padesPrepareFromFile('contrato.pdf', visible: false);
+$documentId = $prepare['document_id'];
+
+// 2) Cms Params (dados para assinar localmente)
+$params = $client->padesCmsParams($documentId);
+// Assine $params['to_be_signed_der_hex'] com seu A1/A3 e obtenha $cmsDerHex
+
+// 3) Inject
+$inject = $client->padesInject($documentId, $params['field_name'], $cmsDerHex);
+
+// 4) Finalize
+$final = $client->padesFinalize($documentId);
+file_put_contents('assinado_pades.pdf', base64_decode($final['pdf_base64']));
+```
+
+### Novos métodos
+
+- `padesPrepareFromBase64(string $pdfBase64, bool $visible = false): array`
+- `padesPrepareFromFile(string $filePath, bool $visible = false): array`
+- `padesCmsParams(string $documentId, ?string $fieldName = null): array`
+- `padesInject(string $documentId, string $fieldName, string $signatureDerHex): array`
+- `padesFinalize(string $documentId): array`
+
+Veja também: `examples/pades_flow.php`.
