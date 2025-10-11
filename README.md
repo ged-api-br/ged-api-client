@@ -121,8 +121,9 @@ $client = new GedApiClient('https://ged.api.br/api/', 'seu_token_aqui');
 $prepare = $client->padesPrepareFromFile('contrato.pdf', visible: false, $anots ?? null);
 $documentId = $prepare['document_id'];
 
-// 2) Cms Params (dados para assinar localmente)
-$params = $client->padesCmsParams($documentId);
+// 2) Cms Params (dados para assinar localmente) — envie o certificado do signatário
+$signerCertDerBase64 = base64_encode($certDer);
+$params = $client->padesCmsParams($documentId, $signerCertDerBase64);
 // Assine $params['to_be_signed_der_hex'] com seu A1/A3 e obtenha $cmsDerHex
 
 // 3) Inject (duas opções)
