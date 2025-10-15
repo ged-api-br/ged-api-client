@@ -1,6 +1,6 @@
 {
   "name": "ged/api-client",
-  "version": "1.0.1",
+    "version": "1.1.0",
   "description": "Cliente oficial PHP da GED API — Assinatura Digital ICP-Brasil",
   "type": "library",
   "license": "MIT",
